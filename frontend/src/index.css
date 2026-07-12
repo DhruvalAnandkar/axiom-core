@@ -1,0 +1,479 @@
+@import "tailwindcss";
+@import "@xyflow/react/dist/style.css";
+
+@theme {
+  --color-axiom-bg: #0a0d12;
+  --color-axiom-surface: #0e1218;
+  --color-axiom-panel: #12161d;
+  --color-axiom-border: rgba(100, 116, 139, 0.28);
+  /* Brand accent pair (cyan → violet). Names kept so 47 call sites re-theme
+     without edits; axiom-success is the semantic green for status signals. */
+  --color-axiom-green: #22d3ee;
+  --color-axiom-green-dim: #8b5cf6;
+  --color-axiom-success: #00ff66;
+  --color-axiom-text: #e8eef7;
+  --color-axiom-muted: #7e8ca0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  background: var(--color-axiom-bg);
+  color: var(--color-axiom-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Aurora: two fixed drifting blob layers behind everything; pages using
+   .axiom-gradient-bg stay translucent so the aurora shows through glass. */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: -12%;
+  z-index: -1;
+  pointer-events: none;
+  will-change: transform;
+}
+
+body::before {
+  background:
+    radial-gradient(circle 34vw at 22% 28%, #22d3ee12, transparent 70%),
+    radial-gradient(circle 40vw at 82% 72%, #8b5cf62b, transparent 70%);
+  animation: axiom-aurora-a 22s ease-in-out infinite alternate;
+}
+
+body::after {
+  background:
+    radial-gradient(circle 30vw at 75% 18%, #22d3ee1f, transparent 70%),
+    radial-gradient(circle 36vw at 15% 85%, #6d28d92e, transparent 70%);
+  animation: axiom-aurora-b 28s ease-in-out infinite alternate;
+}
+
+@keyframes axiom-aurora-a {
+  from { transform: translate3d(-2.5%, -2%, 0) scale(1); }
+  to { transform: translate3d(2.5%, 3%, 0) scale(1.12); }
+}
+
+@keyframes axiom-aurora-b {
+  from { transform: translate3d(2%, 2.5%, 0) scale(1.1); }
+  to { transform: translate3d(-3%, -2%, 0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  body::after {
+    animation: none;
+  }
+}
+
+.axiom-gradient-bg {
+  background:
+    radial-gradient(ellipse 90% 55% at 50% -15%, #22d3ee12, transparent),
+    linear-gradient(180deg, #0a0d1200 0%, #10131b66 45%, #0a0d1200 100%);
+}
+
+.axiom-glass {
+  background: rgba(18, 22, 29, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.axiom-glow {
+  box-shadow:
+    0 0 24px #22d3ee1f,
+    0 0 48px #8b5cf612,
+    inset 0 1px 0 #22d3ee22;
+}
+
+.axiom-node-active {
+  box-shadow:
+    0 0 28px #22d3ee88,
+    0 0 56px #8b5cf640,
+    inset 0 0 16px #22d3ee28;
+  border-color: #22d3ee !important;
+}
+
+.react-flow__background {
+  background: transparent !important;
+}
+
+.react-flow__edge.flagged-edge path {
+  stroke: #f59e0b !important;
+  stroke-width: 2.5 !important;
+  filter: drop-shadow(0 0 6px #f59e0b88);
+}
+
+.react-flow__edge.animated path {
+  stroke-dasharray: 6 4;
+  animation: axiom-dash 0.8s linear infinite;
+}
+
+@keyframes axiom-dash {
+  to {
+    stroke-dashoffset: -10;
+  }
+}
+
+.axiom-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.axiom-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.axiom-scroll::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.35);
+  border-radius: 3px;
+}
+
+.axiom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #22d3ee55;
+}
+
+.axiom-markdown { color: var(--color-axiom-text); line-height: 1.65; }
+.axiom-markdown h1, .axiom-markdown h2, .axiom-markdown h3 { color: var(--color-axiom-green); font-weight: 600; margin: 1.25em 0 0.5em; }
+.axiom-markdown p { margin: 0.75em 0; color: #d5deea; }
+.axiom-markdown ul, .axiom-markdown ol { margin: 0.75em 0; padding-left: 1.25em; color: var(--color-axiom-muted); }
+.axiom-markdown li { margin: 0.35em 0; }
+.axiom-markdown code { border-radius: 4px; background: #0e1218; padding: 0.15em 0.4em; font-size: 0.9em; color: var(--color-axiom-green); }
+.axiom-markdown pre { background: #0e1218; border: 1px solid var(--color-axiom-border); border-radius: 8px; padding: 1em; overflow-x: auto; margin: 1em 0; }
+.axiom-markdown pre code { background: none; padding: 0; }
+.axiom-markdown strong { color: var(--color-axiom-text); }
+.axiom-markdown blockquote { border-left: 3px solid var(--color-axiom-green); padding-left: 1em; margin: 1em 0; color: var(--color-axiom-muted); }
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.35s ease-out;
+}
+
+/* Dashes flow from start toward end (pocket) in SVG user units. */
+@keyframes axiom-flow {
+  to { stroke-dashoffset: -7; }
+}
+
+.axiom-flow-line {
+  animation: axiom-flow 4.5s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .axiom-flow-line {
+    animation: none;
+  }
+}
+
+/* Cue-tip cursor over the table canvas only; hotspot at the green tip. */
+.axiom-cue-cursor {
+  cursor:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><line x1='22' y1='22' x2='9.5' y2='9.5' stroke='%23d4a574' stroke-width='3' stroke-linecap='round'/><line x1='9' y1='9' x2='6.5' y2='6.5' stroke='%23e8e2d0' stroke-width='3' stroke-linecap='round'/><circle cx='4.5' cy='4.5' r='3.2' fill='%2322d3ee' stroke='%23071018' stroke-width='1'/></svg>")
+      4 4,
+    crosshair;
+}
+
+/* Landing hero: slow parallax-drifting ambient shapes (transform-only). */
+.axiom-drift {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  will-change: transform;
+}
+
+@keyframes axiom-drift-slow {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(4%, -6%, 0) scale(1.08); }
+  to { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes axiom-drift-slower {
+  from { transform: translate3d(0, 0, 0) scale(1.05); }
+  50% { transform: translate3d(-5%, 5%, 0) scale(1); }
+  to { transform: translate3d(0, 0, 0) scale(1.05); }
+}
+
+/* Animated gradient headline (background-position sweep). */
+.axiom-gradient-text {
+  background: linear-gradient(90deg, #22d3ee, #8b5cf6, #22d3ee);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: axiom-gradient-sweep 6s ease-in-out infinite;
+}
+
+@keyframes axiom-gradient-sweep {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Staggered card entrance; delay set inline per card. */
+.axiom-card-enter {
+  opacity: 0;
+  animation: fade-in 0.55s ease-out forwards;
+}
+
+/* Ghost-ball verdict pulse (SVG; transform-box keeps scaling centered). */
+.axiom-ghost-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: axiom-ghost-pulse 1.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes axiom-ghost-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.12; }
+  50% { transform: scale(1.28); opacity: 0.45; }
+}
+
+/* Magnetic buttons: translate/scale set from JS; glow on hover. */
+.axiom-magnetic {
+  will-change: transform;
+}
+
+.axiom-magnetic:hover {
+  box-shadow:
+    0 0 18px #22d3ee33,
+    0 0 36px #8b5cf61f;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .axiom-drift,
+  .axiom-gradient-text,
+  .axiom-ghost-pulse {
+    animation: none;
+  }
+  .axiom-card-enter {
+    opacity: 1;
+    animation: none;
+  }
+}
+
+/* Floating dust: two parallax particle layers behind everything. Tiles are
+   translated exactly one tile-height per loop so the drift is seamless. */
+.axiom-particles {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.axiom-particles::before,
+.axiom-particles::after {
+  content: "";
+  position: absolute;
+  inset: -480px -10% 0;
+  background-repeat: repeat;
+  will-change: transform;
+}
+
+.axiom-particles::before {
+  background-image:
+    radial-gradient(circle 1.3px at 23% 21%, #22d3ee66, transparent 100%),
+    radial-gradient(circle 1px at 71% 46%, #8b5cf666, transparent 100%),
+    radial-gradient(circle 1.6px at 44% 74%, #22d3ee44, transparent 100%),
+    radial-gradient(circle 1px at 88% 89%, #e8eef733, transparent 100%);
+  background-size: 480px 480px;
+  animation: axiom-dust 70s linear infinite;
+}
+
+.axiom-particles::after {
+  background-image:
+    radial-gradient(circle 1px at 12% 62%, #22d3ee44, transparent 100%),
+    radial-gradient(circle 1.4px at 58% 12%, #8b5cf655, transparent 100%),
+    radial-gradient(circle 1px at 82% 38%, #e8eef722, transparent 100%);
+  background-size: 480px 480px;
+  animation: axiom-dust 110s linear infinite;
+  opacity: 0.7;
+}
+
+@keyframes axiom-dust {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(0, 480px, 0); }
+}
+
+/* Gentle idle bob for badges/icons that should feel alive. */
+@keyframes axiom-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.axiom-float {
+  animation: axiom-float 5s ease-in-out infinite;
+}
+
+/* Hover lift for interactive cards. */
+.axiom-lift {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.axiom-lift:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 10px 28px #22d3ee1a,
+    0 3px 12px #8b5cf61a;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .axiom-particles::before,
+  .axiom-particles::after,
+  .axiom-float {
+    animation: none;
+  }
+  .axiom-lift,
+  .axiom-lift:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* Hero table loop: an 9s choreographed shot — aim lines draw, cue ball
+   strikes the ghost point, object ball rolls to the pocket and sinks. */
+@keyframes axiom-hero-aim {
+  0% { stroke-dashoffset: 140; opacity: 0; }
+  6% { opacity: 1; }
+  18% { stroke-dashoffset: 0; opacity: 1; }
+  80% { stroke-dashoffset: 0; opacity: 1; }
+  92%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+@keyframes axiom-hero-cue {
+  0%, 22% { transform: translate(0, 0); opacity: 1; }
+  38% { transform: translate(116px, -44px); }
+  46%, 80% { transform: translate(128px, -14px); opacity: 1; }
+  90%, 94% { transform: translate(128px, -14px); opacity: 0; }
+  95% { transform: translate(0, 0); opacity: 0; }
+  100% { transform: translate(0, 0); opacity: 1; }
+}
+
+@keyframes axiom-hero-object {
+  0%, 38% { transform: translate(0, 0); opacity: 1; }
+  62% { transform: translate(158px, -68px); opacity: 1; }
+  68%, 94% { transform: translate(158px, -68px); opacity: 0; }
+  95% { transform: translate(0, 0); opacity: 0; }
+  100% { transform: translate(0, 0); opacity: 1; }
+}
+
+@keyframes axiom-hero-pocket {
+  0%, 55% { opacity: 0.25; }
+  62%, 70% { opacity: 1; }
+  80%, 100% { opacity: 0.25; }
+}
+
+@keyframes axiom-hero-stick {
+  0%, 10% { transform: translate(-12px, 6px) ; opacity: 0; }
+  16% { opacity: 1; transform: translate(-12px, 6px); }
+  22% { transform: translate(0, 0); opacity: 1; }
+  30%, 100% { transform: translate(6px, -2px); opacity: 0; }
+}
+
+.axiom-hero-aim { animation: axiom-hero-aim 9s ease-in-out infinite; }
+.axiom-hero-cue { animation: axiom-hero-cue 9s ease-in-out infinite; }
+.axiom-hero-object { animation: axiom-hero-object 9s ease-in-out infinite; }
+.axiom-hero-pocket { animation: axiom-hero-pocket 9s ease-in-out infinite; }
+.axiom-hero-stick { animation: axiom-hero-stick 9s ease-in-out infinite; }
+
+/* Spotlight cards: radial highlight tracks the cursor via --mx/--my. */
+.axiom-spotlight {
+  position: relative;
+  overflow: hidden;
+}
+
+.axiom-spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 50%),
+    #22d3ee14,
+    transparent 65%
+  );
+}
+
+.axiom-spotlight:hover::before {
+  opacity: 1;
+}
+
+/* Marquee strip (duplicated content scrolls -50%). */
+.axiom-marquee {
+  display: flex;
+  width: max-content;
+  animation: axiom-marquee 28s linear infinite;
+}
+
+@keyframes axiom-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.axiom-marquee:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .axiom-hero-aim,
+  .axiom-hero-cue,
+  .axiom-hero-object,
+  .axiom-hero-pocket,
+  .axiom-hero-stick,
+  .axiom-marquee {
+    animation: none;
+  }
+}
+
+/* Coach panel skeleton shimmer while narrative streams. */
+.axiom-skeleton {
+  border-radius: 6px;
+  background: linear-gradient(90deg, #ffffff08 25%, #ffffff16 50%, #ffffff08 75%);
+  background-size: 200% 100%;
+  animation: axiom-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes axiom-shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .axiom-skeleton {
+    animation: none;
+  }
+}
+
+.axiom-hide-particles .axiom-particles {
+  display: none;
+}
+
+.axiom-compact-nav .axiom-nav-bar {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.axiom-compact-nav .axiom-nav-bar nav a {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.axiom-force-reduce-motion body::before,
+.axiom-force-reduce-motion body::after,
+.axiom-force-reduce-motion .axiom-particles::before,
+.axiom-force-reduce-motion .axiom-particles::after {
+  animation: none !important;
+}

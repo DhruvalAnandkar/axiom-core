@@ -1,0 +1,16 @@
+{
+  "name": "axiom-core",
+  "version": "1.0.0",
+  "description": "Deterministic billiards physics + multi-agent LangGraph coaching. Numbers come from Python trig; LLMs narrate and assess risk only.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "playwright-core": "^1.61.1"
+  }
+}

@@ -1,0 +1,62 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: axiom-backend
+    env_file:
+      - .env
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=${BACKEND_PORT:-3001}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
+      - ENGINE_URL=http://engine:8000
+    networks:
+      - axiom-net
+    restart: unless-stopped
+
+  engine:
+    build:
+      context: ./engine
+    container_name: axiom-engine
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL}
+      - OPENAI_TIMEOUT=${OPENAI_TIMEOUT}
+      - OPENAI_MAX_RETRIES=${OPENAI_MAX_RETRIES}
+      - PORT=8000
+      - WEBHOOK_URL=http://backend:3001/api/webhook
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000}
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - axiom-net
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_SOCKET_URL: ${VITE_SOCKET_URL:-http://localhost:3001}
+    container_name: axiom-frontend
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_started
+      engine:
+        condition: service_started
+    networks:
+      - axiom-net
+    restart: unless-stopped
+
+networks:
+  axiom-net:
+    driver: bridge

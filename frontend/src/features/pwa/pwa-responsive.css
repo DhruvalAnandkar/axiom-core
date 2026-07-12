@@ -1,0 +1,30 @@
+/* Global responsive tap targets for workspace table — additive stylesheet only. */
+@media (max-width: 768px) {
+  .axiom-pwa-shell .flex.min-h-0.flex-1.flex-col > div:first-child button,
+  .axiom-pwa-shell .flex.min-h-0.flex-1.flex-col > div:first-child label {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.625rem 0.75rem;
+    touch-action: manipulation;
+  }
+
+  .axiom-pwa-shell svg.cursor-crosshair {
+    touch-action: manipulation;
+    min-height: 220px;
+  }
+
+  .axiom-pwa-shell .rounded-lg.bg-axiom-green {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.625rem 1rem;
+  }
+
+  .axiom-pwa-shell header nav a,
+  .axiom-pwa-shell header button {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
