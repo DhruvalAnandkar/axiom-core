@@ -42,3 +42,7 @@ Thumbs.db
 .claude/
 CLAUDE.md
 .cursor/
+.cursorrules
+
+# Hackathon pitch scripts (local only)
+PITCH_*.md
